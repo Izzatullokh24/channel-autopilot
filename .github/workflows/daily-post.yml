@@ -2,9 +2,8 @@
 name: Daily post
 
 on:
-  schedule:
-    # 13:00 Asia/Tashkent (UTC+5) = 08:00 UTC
-    - cron: "0 8 * * *"
+  # Schedule disabled until the content engine (bucket 4) lands —
+  # re-enable: cron "0 8 * * *" = 13:00 Asia/Tashkent (UTC+5)
   workflow_dispatch:
     inputs:
       publish:
