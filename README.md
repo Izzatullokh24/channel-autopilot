@@ -25,7 +25,7 @@ idea inbox (Telegram bot) ──► content queue (this repo)
 Built in stages, each independently shippable:
 
 - [x] **1. Plumbing** — repo, bot, Actions cron, test post end-to-end
-- [ ] **2. Idea inbox** — forward raw notes/voice to the bot, they land in the queue
+- [x] **2. Idea inbox** — forward raw notes/voice to the bot, they land in the queue (queue lives in a private repo)
 - [ ] **3. Voice & generator** — Claude turns a queue item into a post in my voice
 - [ ] **4. Daily engine + approval gate** — draft daily, approve with one tap, auto-publish on timeout
 - [ ] **5. Full autonomy + work mining** — flip a flag; mine my commits for "what I built" posts
