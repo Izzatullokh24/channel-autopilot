@@ -49,6 +49,24 @@ class TelegramClient:
         """Identify the bot — cheap way to validate the token."""
         return self.call("getMe")
 
+    def get_updates(self, offset: int | None = None) -> list[dict]:
+        """Fetch pending messages sent to the bot.
+
+        Passing offset=N+1 permanently discards updates <= N on Telegram's
+        side, so callers must only advance the offset after persisting.
+        """
+        params: dict = {"timeout": 0, "allowed_updates": ["message"]}
+        if offset is not None:
+            params["offset"] = offset
+        return self.call("getUpdates", **params)
+
+    def download_file(self, file_id: str) -> bytes:
+        """Download a file (e.g. a voice note) sent to the bot."""
+        file_path = self.call("getFile", file_id=file_id)["file_path"]
+        response = httpx.get(f"{API_BASE}/file/bot{self.token}/{file_path}", timeout=60.0)
+        response.raise_for_status()
+        return response.content
+
     def close(self) -> None:
         self._http.close()
 
