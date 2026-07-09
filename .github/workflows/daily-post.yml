@@ -1,3 +1,4 @@
+# Publishes the daily post to @izzatullokhnotes
 name: Daily post
 
 on:
