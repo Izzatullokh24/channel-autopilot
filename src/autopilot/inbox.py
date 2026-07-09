@@ -87,7 +87,11 @@ def ingest(client: TelegramClient, queue_dir: Path, author_id: int | None, write
         stem = f"{created:%Y%m%d-%H%M%S}-u{update_id}"
 
         if message.get("text"):
-            document = _note_document(created, "text", update_id, message["text"].strip())
+            text = message["text"].strip()
+            if text.startswith("/"):
+                result.skipped.append(f"u{update_id}: bot command ({text.split()[0]})")
+                continue
+            document = _note_document(created, "text", update_id, text)
         elif message.get("voice"):
             voice = message["voice"]
             media_rel = f"media/{stem}.ogg"
