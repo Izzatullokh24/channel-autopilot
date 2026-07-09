@@ -11,14 +11,17 @@ import os
 import sys
 from pathlib import Path
 
+# Windows consoles may default to a legacy codepage that can't print emoji/Uzbek text
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from autopilot.telegram import TelegramClient  # noqa: E402
 
 TEST_POST = (
     "🤖 <b>Texnik test</b>\n\n"
-    "Bu post GitHub Actions orqali avtomatik yuborildi — "
-    "kanal uchun qurayotgan avtomatlashtirish tizimining birinchi qadami.\n\n"
+    "Bu post kanal uchun qurayotgan avtomatlashtirish tizimim orqali "
+    "avtomatik yuborildi — birinchi qadam.\n\n"
     "<i>Tez orada bu haqda batafsil yozaman.</i>"
 )
 
