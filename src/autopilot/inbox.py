@@ -53,6 +53,15 @@ def _note_document(created: datetime, note_type: str, update_id: int, body: str,
     return "\n".join(lines)
 
 
+def _existing_note_bodies(queue_dir: Path) -> set[str]:
+    bodies = set()
+    for note in (queue_dir / "queue").glob("*.md"):
+        text = note.read_text(encoding="utf-8")
+        _, _, body = text.partition("---\n\n")
+        bodies.add(body.strip())
+    return bodies
+
+
 def ingest(client: TelegramClient, queue_dir: Path, author_id: int | None, write: bool) -> IngestResult:
     """Pull pending bot messages and write them into the queue.
 
@@ -61,6 +70,7 @@ def ingest(client: TelegramClient, queue_dir: Path, author_id: int | None, write
     bootstrap mode: reports sender ids so the allowlist can be configured.
     """
     result = IngestResult()
+    seen_bodies = _existing_note_bodies(queue_dir)
     stored_offset = _load_offset(queue_dir)
     updates = client.get_updates(offset=stored_offset + 1 if stored_offset is not None else None)
 
@@ -91,6 +101,10 @@ def ingest(client: TelegramClient, queue_dir: Path, author_id: int | None, write
             if text.startswith("/"):
                 result.skipped.append(f"u{update_id}: bot command ({text.split()[0]})")
                 continue
+            if text in seen_bodies:
+                result.skipped.append(f"u{update_id}: duplicate of an existing note")
+                continue
+            seen_bodies.add(text)
             document = _note_document(created, "text", update_id, text)
         elif message.get("voice"):
             voice = message["voice"]
