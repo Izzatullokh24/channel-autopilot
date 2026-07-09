@@ -1,0 +1,36 @@
+name: Daily post
+
+on:
+  schedule:
+    # 13:00 Asia/Tashkent (UTC+5) = 08:00 UTC
+    - cron: "0 8 * * *"
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Actually publish to the channel (otherwise dry run)"
+        type: boolean
+        default: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install httpx
+
+      - name: Send post
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL_ID: "@izzatullokhnotes"
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ inputs.publish }}" = "true" ]; then
+            python scripts/post_test.py --publish
+          else
+            python scripts/post_test.py
+          fi
